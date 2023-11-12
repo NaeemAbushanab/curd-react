@@ -90,31 +90,37 @@ function Index() {
               <th scope="col">Delete</th>
             </tr>
           </thead>
-          <tbody>
-            {users.map((user, index) => (
-              <tr key={user._id}>
-                <th>{index}</th>
-                <td>{user.name}</td>
-                <td>{user.email}</td>
-                <td>{user.password}</td>
-                <td>
-                  <Link className="btn btn-info" to={`/user/detalis/${user._id}`}>
-                    Details
-                  </Link>
-                </td>
-                <td>
-                  <Link className="btn btn-primary" to={`/user/edit/${user._id}`}>
-                    edit
-                  </Link>
-                </td>
-                <td>
-                  <Button className="btn btn-danger" onClick={() => handleDelete(user._id)}>
-                    delete
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
+          {users.length > 0 ? (
+            <tbody>
+              {users.map((user, index) => (
+                <tr key={user._id}>
+                  <th>{index}</th>
+                  <td>{user.name}</td>
+                  <td>{user.email}</td>
+                  <td>{user.password}</td>
+                  <td>
+                    <Link className="btn btn-info" to={`/user/detalis/${user._id}`}>
+                      Details
+                    </Link>
+                  </td>
+                  <td>
+                    <Link className="btn btn-primary" to={`/user/edit/${user._id}`}>
+                      edit
+                    </Link>
+                  </td>
+                  <td>
+                    <Button className="btn btn-danger" onClick={() => handleDelete(user._id)}>
+                      delete
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          ) : (
+            <div className="top-0 start-0 position-absolute w-100 vh-100 d-flex justify-content-center align-items-center" style={{ backgroundColor: "rgb(255, 255, 255, 0.75)" }}>
+              <h2 className="position-absolute mt-4 text-danger">no user data</h2>
+            </div>
+          )}
         </table>
       </>
     );
