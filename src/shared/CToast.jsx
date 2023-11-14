@@ -53,6 +53,7 @@ const handleUndo = (tableRow, users) => {
   isClickUndo = true;
   if (users == 1) {
     document.querySelector(`#tbody`).innerHTML = "";
+    document.querySelector(`#tbody`).appendChild(tableRow);
   }
   tableRow.classList.remove("d-none");
   tableRow.classList.add("table-row");
