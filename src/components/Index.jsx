@@ -1,28 +1,24 @@
 import axios from "axios";
 import React, { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
-import { SuccessToast, ErrorToast } from "../shared/CToast";
+import { SuccessToast, ErrorToast, UndoToast } from "../shared/CToast";
 import ReactLoading from "react-loading";
 import { confirmDialog } from "primereact/confirmdialog";
 import { Button } from "primereact/button";
 import Error404 from "./Error404";
+import { ToastContainer, toast } from "react-toastify";
 function Index() {
   const [users, setUsers] = useState([]);
-  let [isDone, setIsDone] = useState(false);
   let [loading, setLoading] = useState(true);
   let [show404, setShow404] = useState(false);
   useEffect(() => {
     getUsers();
   }, []);
-  useEffect(() => {
-    getUsers();
-  }, [isDone]);
   const getUsers = () => {
     axios
       .get("https://crud-users-gold.vercel.app/users")
       .then(({ data }) => {
         setUsers(data.users);
-        setIsDone(true);
         setLoading(false);
       })
       .catch((err) => {
@@ -35,32 +31,23 @@ function Index() {
         setIsDone(true);
       });
   };
-  const handleDelete = (id) => {
+  const handleDelete = (id, index) => {
     confirmDialog({
       message: "Do you want to delete this record?",
       header: "Delete Confirmation",
       icon: "pi pi-info-circle",
       acceptClassName: "p-button-danger",
-      accept: () => accept(id),
+      accept: () => accept(id, index),
     });
   };
-  const accept = (id) => {
-    setIsDone(false);
-    axios
-      .delete(`https://crud-users-gold.vercel.app/users/${id}`)
-      .then(({ data }) => {
-        if (data.message == "success") {
-          setIsDone(true);
-          SuccessToast("user is deleted");
-        }
-      })
-      .catch((err) => {
-        if (err.response != undefined) {
-          ErrorToast(err.response.data.message);
-        } else {
-          ErrorToast(err.message);
-        }
-      });
+
+  const accept = (id, index) => {
+    const tableRow = document.querySelector(`#row-${index}`);
+    document.querySelector(`#tbody`).removeChild(tableRow);
+    if (users.length == 1) {
+      document.querySelector(`#tbody`).innerHTML = "No data";
+    }
+    UndoToast(tableRow, id, users.length);
   };
   if (show404) {
     return <Error404 />;
@@ -73,11 +60,6 @@ function Index() {
   } else {
     return (
       <>
-        {!isDone && (
-          <div className="top-0 start-0 position-absolute w-100 vh-100 d-flex justify-content-center align-items-center opacity-75 bg-white">
-            <ReactLoading type="spokes" color="#0000FF" height={100} width={50} />
-          </div>
-        )}
         <table className="table">
           <thead>
             <tr>
@@ -90,41 +72,43 @@ function Index() {
               <th scope="col">Delete</th>
             </tr>
           </thead>
-          {users.length > 0 ? (
-            <tbody>
-              {users.map((user, index) => (
-                <tr key={user._id}>
-                  <th>{index}</th>
-                  <td>{user.name}</td>
-                  <td>{user.email}</td>
-                  <td>{user.password}</td>
-                  <td>
-                    <Link className="btn btn-info" to={`/user/detalis/${user._id}`}>
-                      Details
-                    </Link>
-                  </td>
-                  <td>
-                    <Link className="btn btn-primary" to={`/user/edit/${user._id}`}>
-                      edit
-                    </Link>
-                  </td>
-                  <td>
-                    <Button className="btn btn-danger" onClick={() => handleDelete(user._id)}>
-                      delete
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          ) : (
-            <div className="top-0 start-0 position-absolute w-100 vh-100 d-flex justify-content-center align-items-center" style={{ backgroundColor: "rgb(255, 255, 255, 0.75)" }}>
-              <h2 className="position-absolute mt-4 text-danger">no user data</h2>
-            </div>
-          )}
+          <tbody id="tbody">
+            {users.length > 0
+              ? users.map((user, index) => (
+                  <tr key={user._id} id={`row-${index}`}>
+                    <th>{index}</th>
+                    <td>{user.name}</td>
+                    <td>{user.email}</td>
+                    <td>{user.password}</td>
+                    <td>
+                      <Link className="btn btn-info" to={`/user/detalis/${user._id}`}>
+                        Details
+                      </Link>
+                    </td>
+                    <td>
+                      <Link className="btn btn-primary" to={`/user/edit/${user._id}`}>
+                        edit
+                      </Link>
+                    </td>
+                    <td>
+                      <Button className="btn btn-danger" onClick={() => handleDelete(user._id, index)}>
+                        delete
+                      </Button>
+                    </td>
+                  </tr>
+                ))
+              : displayNoData()}
+          </tbody>
         </table>
       </>
     );
   }
 }
-
+const displayNoData = () => {
+  return (
+    <div id="noData" className="top-0 start-0 position-absolute w-100 vh-100 d-flex justify-content-center align-items-center" style={{ backgroundColor: "rgb(255, 255, 255, 0.75)" }}>
+      <h2 className="position-absolute mt-4 text-danger">no user data</h2>
+    </div>
+  );
+};
 export default Index;

@@ -99,7 +99,7 @@ function Create() {
           Cancel
         </button>
       </form>
-      {toggleBtn && <p className="text-danger mt-5">* you must change "User Name" if you want to update this record</p>}
+      {toggleBtn && <p className="text-danger mt-5">* you must edit "User Name" if you want to update this record</p>}
     </>
   );
 }
