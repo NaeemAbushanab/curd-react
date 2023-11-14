@@ -43,7 +43,7 @@ function Index() {
 
   const accept = (id, index) => {
     const tableRow = document.querySelector(`#row-${index}`);
-    document.querySelector(`#tbody`).removeChild(tableRow);
+    tableRow.classList.add("d-none");
     if (users.length == 1) {
       document.querySelector(`#tbody`).innerHTML = "No data";
     }

@@ -54,12 +54,14 @@ const handleUndo = (tableRow, users) => {
   if (users == 1) {
     document.querySelector(`#tbody`).innerHTML = "";
   }
-  document.querySelector(`#tbody`).appendChild(tableRow);
+  tableRow.classList.remove("d-none");
+  tableRow.classList.add("table-row");
 };
 const handleDelete = (id, tableRow) => {
   if (!isClickUndo) {
     axios.delete(`https://crud-users-gold.vercel.app/users/${id}`).catch((err) => {
-      document.querySelector(`#tbody`).appendChild(tableRow);
+      tableRow.classList.remove("d-none");
+      tableRow.classList.add("table-row");
       if (err.response != undefined) {
         ErrorToast(`${err.response.data.message}, plase refesh page`);
       } else {
